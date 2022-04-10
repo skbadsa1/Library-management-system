@@ -1,3 +1,4 @@
+from pyexpat import model
 from django import forms
 from django.contrib.auth.models import User
 from . import models
@@ -41,6 +42,10 @@ class BookForm(forms.ModelForm):
         model=models.Book
         fields=['name','isbn','author','category']
 
+
+class DeleteBookForm(forms.Form):
+    isbn=forms.ModelChoiceField(queryset=models.Book.objects.all(),empty_label="Name and isbn", to_field_name="isbn",label='Name and Isbn')
+    
 
 
 class IssuedBookForm(forms.Form):

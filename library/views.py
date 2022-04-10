@@ -89,7 +89,7 @@ def studentsignup_view(request):
 def is_admin(user):
     return user.groups.filter(name='ADMIN').exists()
 
-
+ 
 def afterlogin_view(request):
 
     if is_admin(request.user):
@@ -114,6 +114,30 @@ def addbook_view(request):
             user=form.save()
             return render(request,'library/bookadded.html')
     return render(request,'library/addbook.html',{'form':form})
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+
+def deletebook_view(request):
+    #now it is empty book form for sending to html
+    form=forms.DeleteBookForm()
+    
+    if request.method=='POST':
+        #now this form have data from html
+        form=forms.DeleteBookForm(request.POST)
+        
+        if form.is_valid():
+            try:
+                isbn_input=form.cleaned_data['isbn']
+                
+                user=models.Book.objects.get(isbn = isbn_input)
+                user.delete()
+            except:
+                print("record does not exists")    
+            return render(request,'library/deletebook.html')
+    return render(request,'library/deletebook.html',{'form':form})
+
+ 
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
